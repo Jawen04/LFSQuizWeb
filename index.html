@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sliding Menu Example</title>
+    <link rel="stylesheet" href="styles.css">
+
+    <style>
+        
+    </style>
+</head>
+<body>
+
+    <!-- Hamburger icon -->
+    <div class="menu-btn" onclick="toggleMenu()">☰</div>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <a href="index.html">Home</a>
+        <a href="dataTransceiver.html">Data Transceiver</a>
+        <a href="UARTTimer.html">UART Timer</a>
+    </div>
+
+    <!-- Main content -->
+    <div class="content">
+        <h1>Main Page</h1>
+        <p>This is your homepage content.</p>
+        
+        <label for="myInput">Enter value:</label>
+        <input type="text" id="myInput" placeholder="Type here..." />
+    </div>
+
+    <script>
+        function toggleMenu() {
+            document.getElementById("sidebar").classList.toggle("active");
+        }
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="styles.css">
+
+    <title>DataTransceiver - UART Timing Calculator</title>
+</head>
+<body>
+
+    <div class="menu-btn" onclick="toggleMenu()">☰</div>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <a href="index.html">Home</a>
+        <a href="dataTransceiver.html">Data Transceiver</a>
+        <a href="UARTTimer.html">UART Timer</a>
+    </div>
+
+    <div class="content">
+
+        <h1>UART (8-N-1) Transmission Time Calculator</h1>
+        <a href="index.html">Back to Home</a>
+
+        <p>
+            <label for="preamble">Preamble size (bytes):</label>
+            <input type="number" id="preamble" placeholder="Enter number of bytes..." />
+        </p>
+
+        <p>
+            <label for="header">Header size (bytes):</label>
+            <input type="number" id="header" placeholder="Enter number of bytes..." />
+        </p>
+
+        <p>
+            <label for="payload">Payload size (bytes):</label>
+            <input type="number" id="payload" placeholder="Enter number of bytes..." />
+        </p>
+
+        <p>
+            <label for="checksum">Checksum size (bytes):</label>
+            <input type="number" id="checksum" placeholder="Enter number of bytes..." />
+        </p>
+
+        <p>
+            <label for="endMarker">End marker size (bytes):</label>
+            <input type="number" id="endMarker" placeholder="Enter number of bytes..." />
+        </p>
+
+        <p>
+            <label for="baudRate">Baud rate (bits/s):</label>
+            <input type="number" id="baudRate" placeholder="Enter baud rate..." />
+        </p>
+
+        <p>
+            <label for="delay">Inter-byte delay (microseconds):</label>
+            <input type="number" id="delay" placeholder="Enter delay in μs..." />
+        </p>
+
+        <button onclick="calculateUART()">Calculate</button>
+
+        <p class="answer-text" id="result1"></p>
+        <p class="answer-text" id="result2"></p>
+        <p class="answer-text" id="result3"></p>
+        <p class="answer-text" id="result4"></p>
+    </div>  
+
+    <script>
+        function calculateUART() {
+            // Get values from inputs
+            let preamble = Number(document.getElementById("preamble").value);
+            let header = Number(document.getElementById("header").value);
+            let payload = Number(document.getElementById("payload").value);
+            let checksum = Number(document.getElementById("checksum").value);
+            let endMarker = Number(document.getElementById("endMarker").value);
+            let baudRate = Number(document.getElementById("baudRate").value);
+            let delay_us = Number(document.getElementById("delay").value);
+
+            const bitsPerByte = 10; // UART 8-N-1: 1 start + 8 data + 0 parity + 1 stop
+
+            // Step 1: Total Bytes
+            let totalBytes = preamble + header + payload + checksum + endMarker;
+
+            // Step 2: Transmission time for bits
+            let totalBits = totalBytes * bitsPerByte;
+            let timeTransmission = totalBits / baudRate;
+
+            // Step 3: Inter-byte delay time
+            let numGaps = totalBytes - 1;
+            let timeDelays = numGaps * (delay_us / 1_000_000); // μs → seconds
+
+            let totalTimeSeconds = timeTransmission + timeDelays;
+            let totalTimeMs = totalTimeSeconds * 1000;
+
+            // Display results
+            document.getElementById("result1").textContent = `Total Bytes: ${totalBytes}`;
+            document.getElementById("result2").textContent = `Total Bits (8-N-1): ${totalBits}`;
+            document.getElementById("result3").textContent = `Transmission Time: ${timeTransmission.toFixed(6)} s | Delay Time (${numGaps} gaps): ${timeDelays.toFixed(6)} s`;
+            document.getElementById("result4").textContent = `Total Transmission Time: ${totalTimeMs.toFixed(3)} ms`;
+        }
+
+        function toggleMenu() {
+            document.getElementById("sidebar").classList.toggle("active");
+        }
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="styles.css">
+
+    <title>DataTransceiver</title>
+</head>
+<body>
+
+    <div class="menu-btn" onclick="toggleMenu()">☰</div>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <a href="index.html">Home</a>
+        <a href="dataTransceiver.html">Data Transceiver</a>
+        <a href="UARTTimer.html">UART Timer</a>
+    </div>
+
+    <div class="content">
+
+
+    
+    <h1>Data Transceiver Calculator </h1>
+    <a href="index.html">Back to Home</a>
+    <p>
+    <label for="mediaTimeLength">Enter the total size of media in bits:</label>
+    <input type="text" id="mediaTimeLength" placeholder="Type here..." />
+    </p>
+
+    <p>
+    <label for="mediaQuality">Enter media quality in bit/s:</label>
+    <input type="text" id="mediaQuality" placeholder="Type here..." />
+    </p>
+
+    <p>
+    <label for="canBusRate">Enter bitrate of CAN bus in bit/s</label>
+    <input type="text" id="canBusRate" placeholder="Type here..." />
+    </p>
+
+    <p>
+    <label for="canFrameSize">Enter the max size of the CAN frame in bits (usually 108/111 bits):</label>
+    <input type="text" id="canFrameSize" placeholder="Type here..." />
+    </p>
+    
+
+        <button onclick="calculate()">Calculate</button>
+
+    <p class="answer-text" id="result1"></p>
+    <p class="answer-text" id="result2"></p>
+    </div>  
+    <script>
+        function calculate() {
+            let mediaTimeLength = Number(document.getElementById("mediaTimeLength").value);
+            let mediaQuality = Number(document.getElementById("mediaQuality").value);
+            let canBusRate = Number(document.getElementById("canBusRate").value);
+            let canFrameSize = Number(document.getElementById("canFrameSize").value);
+
+            transferTime = mediaTimeLength / canBusRate
+            totFrames = (mediaQuality / canFrameSize) * mediaTimeLength
+
+            document.getElementById("result1").textContent = "Transfer time (sec): " + transferTime;
+            document.getElementById("result2").textContent = "Total frames: " + totFrames;
+                     
+        }
+
+        function toggleMenu() {
+            document.getElementById("sidebar").classList.toggle("active");
+        }
+
+
+
+    </script>
+    
+</body>
+</html>
+
+
