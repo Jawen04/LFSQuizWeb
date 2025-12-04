@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="assets/LFSLogo.png" type="image/x-icon">
+
+    <title>LFSQuiz - ALU Calculator</title>
+</head>
+<body>
+
+    <div class="menu-btn" onclick="toggleMenu()">☰</div>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <a href="index.html">Home</a>
+        <a href="dataTransceiver.html">Data Transceiver</a>
+        <a href="UARTTimer.html">UART Timer</a>
+        <a href="ALU.html">ALU</a>
+    </div>
+
+    <div class="content">
+
+        <h1>Fixed-width ALU Calculator</h1>
+        <a href="index.html">Back to Home</a>
+
+        <p>
+            <label for="expression">Enter your arithmetic expression (decimal numbers only):</label>
+            <input type="text" id="expression" placeholder="e.g., 123-589+(42-327)-(910-1250)" />
+        </p>
+
+        <p>
+            <label for="bitWidth">Select ALU bit width:</label>
+            <input type="number" id="bitWidth" value="15" min="2" max="64" />
+        </p>
+
+        <button onclick="calculateALU()">Calculate</button>
+
+        <p class="answer-text" id="resultDecimal"></p>
+        <p class="answer-text" id="resultBinary"></p>
+
+    </div>  
+
+    <script>
+        function calculateALU() {
+            const expr = document.getElementById("expression").value;
+            const bits = Number(document.getElementById("bitWidth").value);
+
+            // Function to apply two's complement overflow
+            function twosComplement(value, bits) {
+                const max = 2 ** (bits - 1) - 1;
+                const min = -(2 ** (bits - 1));
+                let mask = 2 ** bits;
+
+                // wrap around using modulo for fixed-width integer
+                let wrapped = ((value + mask) % mask);
+                if (wrapped > max) wrapped -= mask;
+                return wrapped;
+            }
+
+            // Evaluate expression safely
+            try {
+                // Only allow numbers and basic arithmetic operators
+                if (!/^[0-9+\-*/()\s]+$/.test(expr)) {
+                    throw new Error("Invalid characters in expression");
+                }
+
+                // Evaluate using JavaScript
+                let result = Function('"use strict"; return (' + expr + ')')();
+
+                // Apply fixed-width overflow
+                result = Math.trunc(result); // ensure integer
+                result = twosComplement(result, bits);
+
+                // Convert to binary string
+                let binaryStr = (result >>> 0).toString(2);
+                // Trim to bit width
+                binaryStr = binaryStr.slice(-bits).padStart(bits, '0');
+
+                document.getElementById("resultDecimal").textContent = `Result (decimal): ${result}`;
+                document.getElementById("resultBinary").textContent = `Result (two's complement ${bits}-bit): ${binaryStr}`;
+
+            } catch (err) {
+                document.getElementById("resultDecimal").textContent = `Error: ${err.message}`;
+                document.getElementById("resultBinary").textContent = '';
+            }
+        }
+
+        function toggleMenu() {
+            document.getElementById("sidebar").classList.toggle("active");
+        }
+    </script>
+
+</body>
+</html>

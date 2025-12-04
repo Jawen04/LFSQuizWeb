@@ -17,6 +17,7 @@
         <a href="index.html">Home</a>
         <a href="dataTransceiver.html">Data Transceiver</a>
         <a href="UARTTimer.html">UART Timer</a>
+        <a href="ALU.html">ALU</a>
     </div>
 
     <div class="content">
@@ -30,23 +31,23 @@
         </p>
 
         <p>
-            <label for="header">Header size (bytes):</label>
-            <input type="number" id="header" placeholder="Enter number of bytes..." />
+            <label for="header">Header size (bytes) or leave empty:</label>
+            <input type="number" id="header" placeholder="Enter or leave empty (0)" />
         </p>
 
         <p>
             <label for="payload">Payload size (bytes):</label>
-            <input type="number" id="payload" placeholder="Enter number of bytes..." />
+            <input type="number" id="payload" placeholder="Enter or leave empty (0)" />
         </p>
 
         <p>
             <label for="checksum">Checksum size (bytes):</label>
-            <input type="number" id="checksum" placeholder="Enter number of bytes..." />
+            <input type="number" id="checksum" placeholder="Enter or leave empty (0)"/>
         </p>
 
         <p>
             <label for="endMarker">End marker size (bytes):</label>
-            <input type="number" id="endMarker" placeholder="Enter number of bytes..." />
+            <input type="number" id="endMarker" placeholder="Enter or leave empty (0)" />
         </p>
 
         <p>
@@ -56,7 +57,7 @@
 
         <p>
             <label for="delay">Inter-byte delay (microseconds):</label>
-            <input type="number" id="delay" placeholder="Enter delay in μs..." />
+            <input type="number" id="delay" placeholder="Enter or leave empty (0)" />
         </p>
 
         <button onclick="calculateUART()">Calculate</button>
