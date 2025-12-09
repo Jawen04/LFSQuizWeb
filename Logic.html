@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="assets/LFSLogo.png" type="image/x-icon">
+
+    <title>LFSQuiz - UART Timing Calculator</title>
+</head>
+<body>
+
+    <div class="menu-btn" onclick="toggleMenu()">☰</div>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <a href="index.html">Home</a>
+        <a href="dataTransceiver.html">Data Transceiver</a>
+        <a href="UARTTimer.html">UART Timer</a>
+        <a href="ALU.html">ALU</a>
+    </div>
+
+    <div class="content">
+
+        <h1>UART (8-N-1) Transmission Time Calculator</h1>
+        <a href="index.html">Back to Home</a>
+
+        <p>
+            <label for="preamble">Preamble size (bytes):</label>
+            <input type="input" id="preamble" placeholder="Enter number of bytes..." />
+        </p>
+
+        
+
+        <button onclick="calculateLogic()">Calculate</button>
+
+        <p class="answer-text" id="result1"></p>
+        <p class="answer-text" id="result2"></p>
+        <p class="answer-text" id="result3"></p>
+        <p class="answer-text" id="result4"></p>
+    </div>  
+
+    <script>
+
+        function extractLogic() {}
+
+        function calculateLogic() {
+            
+        }
+
+        function toggleMenu() {
+            document.getElementById("sidebar").classList.toggle("active");
+        }
+    </script>
+
+</body>
+</html>
