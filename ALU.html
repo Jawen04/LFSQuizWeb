@@ -18,6 +18,7 @@
         <a href="dataTransceiver.html">Data Transceiver</a>
         <a href="UARTTimer.html">UART Timer</a>
         <a href="ALU.html">ALU</a>
+        <a href="Logic.html">Logic Expression</a>
     </div>
 
     <div class="content">
@@ -47,35 +48,27 @@
             const expr = document.getElementById("expression").value;
             const bits = Number(document.getElementById("bitWidth").value);
 
-            // Function to apply two's complement overflow
             function twosComplement(value, bits) {
                 const max = 2 ** (bits - 1) - 1;
                 const min = -(2 ** (bits - 1));
                 let mask = 2 ** bits;
 
-                // wrap around using modulo for fixed-width integer
                 let wrapped = ((value + mask) % mask);
                 if (wrapped > max) wrapped -= mask;
                 return wrapped;
             }
 
-            // Evaluate expression safely
             try {
-                // Only allow numbers and basic arithmetic operators
                 if (!/^[0-9+\-*/()\s]+$/.test(expr)) {
                     throw new Error("Invalid characters in expression");
                 }
 
-                // Evaluate using JavaScript
                 let result = Function('"use strict"; return (' + expr + ')')();
 
-                // Apply fixed-width overflow
-                result = Math.trunc(result); // ensure integer
+                result = Math.trunc(result); 
                 result = twosComplement(result, bits);
 
-                // Convert to binary string
                 let binaryStr = (result >>> 0).toString(2);
-                // Trim to bit width
                 binaryStr = binaryStr.slice(-bits).padStart(bits, '0');
 
                 document.getElementById("resultDecimal").textContent = `Result (decimal): ${result}`;

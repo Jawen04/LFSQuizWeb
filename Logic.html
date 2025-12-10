@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LFSQuiz - Home</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="icon" href="assets/LFSLogo.png" type="image/x-icon">
 
-    <title>LFSQuiz - UART Timing Calculator</title>
 </head>
 <body>
-
     <div class="menu-btn" onclick="toggleMenu()">☰</div>
 
     <!-- Sidebar -->
@@ -18,34 +17,82 @@
         <a href="dataTransceiver.html">Data Transceiver</a>
         <a href="UARTTimer.html">UART Timer</a>
         <a href="ALU.html">ALU</a>
+        <a href="Logic.html">Logic Expression</a>
     </div>
 
     <div class="content">
-
-        <h1>UART (8-N-1) Transmission Time Calculator</h1>
-        <a href="index.html">Back to Home</a>
+        <h1>Logic Expression Evaluator</h1>
 
         <p>
-            <label for="preamble">Preamble size (bytes):</label>
-            <input type="input" id="preamble" placeholder="Enter number of bytes..." />
+            <label for="expression">Enter logic expression:</label><br>
+            <input type="text" id="expression" placeholder="e.g., (0x4D23 << 1) & 0x43A1 or A + B" size="40" />
         </p>
 
-        
+        <p>
+            <label for="outputFormat">Select output format:</label><br>
+            <select id="outputFormat">
+                <option value="decimal">Decimal</option>
+                <option value="hex">Hexadecimal</option>
+                <option value="binary">Binary</option>
+            </select>
+        </p>
 
-        <button onclick="calculateLogic()">Calculate</button>
+        <button onclick="evaluateExpression()">Calculate</button>
 
         <p class="answer-text" id="result1"></p>
-        <p class="answer-text" id="result2"></p>
-        <p class="answer-text" id="result3"></p>
-        <p class="answer-text" id="result4"></p>
-    </div>  
+    </div>
 
     <script>
+        
 
-        function extractLogic() {}
+        function evaluateExpression() {
+            const expr = String(document.getElementById("expression").value);
 
-        function calculateLogic() {
-            
+            const tokens = [];
+            const re = /\s*(0x[0-9a-fA-F]+|0b[01]+|0o[0-7]+|\d+|[A-Za-z_]\w*|>>>|<<|>>|[+\-*/%&|^~()])/gy;
+            let m;
+            while ((m = re.exec(expr)) !== null) tokens.push(m[1]);
+
+            let i = 0;
+            const peek = () => tokens[i];
+            const next = () => tokens[i++];
+
+            const toNumber = (tok) => {
+                if (tok.startsWith("0x")) return parseInt(tok, 16);
+                if (tok.startsWith("0b")) return parseInt(tok.slice(2), 2);
+                if (tok.startsWith("0o")) return parseInt(tok.slice(2), 8);
+                return parseInt(tok, 10);
+            };
+
+            function parseExpression() { return parseBitwiseOr(); }
+            function parseBitwiseOr() { let left=parseBitwiseXor(); while(peek()==="|"){next(); left|=parseBitwiseXor();} return left; }
+            function parseBitwiseXor() { let left=parseBitwiseAnd(); while(peek()==="^"){next(); left^=parseBitwiseAnd();} return left; }
+            function parseBitwiseAnd() { let left=parseShift(); while(peek()==="&"){next(); left&=parseShift();} return left; }
+            function parseShift() { let left=parseAddSub(); while(["<<",">>",">>>"].includes(peek())){const op=next(), r=parseAddSub(); left=op==="<<"?left<<r:op===">>"?left>>r:left>>>r;} return left; }
+            function parseAddSub() { let left=parseMulDiv(); while(["+","-"].includes(peek())){const op=next(), r=parseMulDiv(); left=op==="+"?left+r:left-r;} return left; }
+            function parseMulDiv() { let left=parseUnary(); while(["*","/","%"].includes(peek())){const op=next(), r=parseUnary(); left=op==="*"?left*r:op==="/"?Math.floor(left/r):left%r;} return left; }
+            function parseUnary() { if(peek()==="~"){next();return ~parseUnary();} if(peek()==="-"){next();return -parseUnary();} if(peek()==="+"){next();return +parseUnary();} return parsePrimary(); }
+            function parsePrimary() {
+                const tok = peek();
+                if(tok==="("){next(); const v=parseExpression(); if(next()!==")")throw Error("Missing )"); return v; }
+                next();
+                if(/^\d/.test(tok)||tok.startsWith("0x")||tok.startsWith("0b")||tok.startsWith("0o")) return toNumber(tok);
+                if(variables.hasOwnProperty(tok)) return variables[tok];
+                throw new Error("Unknown token: "+tok);
+            }
+
+            try {
+                const result = parseExpression();
+                const format = document.getElementById("outputFormat").value;
+                let formattedResult;
+                if(format==="hex") formattedResult = "0x" + result.toString(16).toUpperCase();
+                else if(format==="binary") formattedResult = "0b" + result.toString(2);
+                else formattedResult = result.toString(10);
+
+                document.getElementById("result1").textContent = `Result: ${formattedResult}`;
+            } catch(e) {
+                document.getElementById("result1").textContent = "Error: " + e.message;
+            }
         }
 
         function toggleMenu() {
