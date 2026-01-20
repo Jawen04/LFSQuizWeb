@@ -65,13 +65,69 @@
             };
 
             function parseExpression() { return parseBitwiseOr(); }
-            function parseBitwiseOr() { let left=parseBitwiseXor(); while(peek()==="|"){next(); left|=parseBitwiseXor();} return left; }
-            function parseBitwiseXor() { let left=parseBitwiseAnd(); while(peek()==="^"){next(); left^=parseBitwiseAnd();} return left; }
-            function parseBitwiseAnd() { let left=parseShift(); while(peek()==="&"){next(); left&=parseShift();} return left; }
-            function parseShift() { let left=parseAddSub(); while(["<<",">>",">>>"].includes(peek())){const op=next(), r=parseAddSub(); left=op==="<<"?left<<r:op===">>"?left>>r:left>>>r;} return left; }
-            function parseAddSub() { let left=parseMulDiv(); while(["+","-"].includes(peek())){const op=next(), r=parseMulDiv(); left=op==="+"?left+r:left-r;} return left; }
-            function parseMulDiv() { let left=parseUnary(); while(["*","/","%"].includes(peek())){const op=next(), r=parseUnary(); left=op==="*"?left*r:op==="/"?Math.floor(left/r):left%r;} return left; }
-            function parseUnary() { if(peek()==="~"){next();return ~parseUnary();} if(peek()==="-"){next();return -parseUnary();} if(peek()==="+"){next();return +parseUnary();} return parsePrimary(); }
+
+            function parseBitwiseOr() {
+    let left = parseBitwiseXor();
+    while (peek() === "|") {
+        next();
+        left = (left | parseBitwiseXor()) >>> 0;
+    }
+    return left;
+}
+
+function parseBitwiseXor() {
+    let left = parseBitwiseAnd();
+    while (peek() === "^") {
+        next();
+        left = (left ^ parseBitwiseAnd()) >>> 0;
+    }
+    return left;
+}
+
+function parseBitwiseAnd() {
+    let left = parseShift();
+    while (peek() === "&") {
+        next();
+        left = (left & parseShift()) >>> 0;
+    }
+    return left;
+}
+
+function parseShift() {
+    let left = parseAddSub();
+    while (["<<", ">>", ">>>"].includes(peek())) {
+        const op = next();
+        const r = parseAddSub();
+        if (op === "<<") left = (left << r) >>> 0;
+        else if (op === ">>") left = (left >> r) >>> 0;
+        else left = (left >>> r) >>> 0;
+    }
+    return left;
+}
+
+function parseUnary() {
+    if (peek() === "~") {
+        next();
+        return (~parseUnary()) >>> 0;
+    }
+    if (peek() === "-") {
+        next();
+        return -parseUnary();
+    }
+    if (peek() === "+") {
+        next();
+        return +parseUnary();
+    }
+    return parsePrimary();
+}
+
+            // function parseBitwiseOr() { let left=parseBitwiseXor(); while(peek()==="|"){next(); left|=parseBitwiseXor();} return left; }
+            // function parseBitwiseXor() { let left=parseBitwiseAnd(); while(peek()==="^"){next(); left^=parseBitwiseAnd();} return left; }
+            // function parseBitwiseAnd() { let left=parseShift(); while(peek()==="&"){next(); left&=parseShift();} return left; }
+            // function parseShift() { let left=parseAddSub(); while(["<<",">>",">>>"].includes(peek())){const op=next(), r=parseAddSub(); left=op==="<<"?left<<r:op===">>"?left>>r:left>>>r;} return left; }
+            // function parseAddSub() { let left=parseMulDiv(); while(["+","-"].includes(peek())){const op=next(), r=parseMulDiv(); left=op==="+"?left+r:left-r;} return left; }
+            // function parseMulDiv() { let left=parseUnary(); while(["*","/","%"].includes(peek())){const op=next(), r=parseUnary(); left=op==="*"?left*r:op==="/"?Math.floor(left/r):left%r;} return left; }
+            // function parseUnary() { if(peek()==="~"){next();return ~parseUnary();} if(peek()==="-"){next();return -parseUnary();} if(peek()==="+"){next();return +parseUnary();} return parsePrimary(); }
             function parsePrimary() {
                 const tok = peek();
                 if(tok==="("){next(); const v=parseExpression(); if(next()!==")")throw Error("Missing )"); return v; }
